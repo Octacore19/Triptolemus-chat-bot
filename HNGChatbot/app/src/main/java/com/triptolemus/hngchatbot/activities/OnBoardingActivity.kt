@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.triptolemus.hngchatbot.R
+import com.triptolemus.hngchatbot.utils.PreferenceUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableCompletableObserver
 import io.reactivex.schedulers.Schedulers
@@ -27,6 +28,14 @@ class OnBoardingActivity : AppCompatActivity(), View.OnClickListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
         startButton.setOnClickListener(this)
+        PreferenceUtils.initSharedPreference(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (PreferenceUtils.getUser() != ""){
+            navigateToChatActivity(PreferenceUtils.getUser()!!)
+        }
     }
 
     private fun navigateToChatActivity(username: String) {
@@ -34,12 +43,14 @@ class OnBoardingActivity : AppCompatActivity(), View.OnClickListener{
         intent.putExtra("username", username)
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
     }
 
     override fun onClick(item: View?) {
         val username: String = usernameEdittext.text.toString().trim()
         if (item!!.id == R.id.startButton){
             if (username.isNotEmpty() && isConnected) {
+                PreferenceUtils.saveUser(username)
                 navigateToChatActivity(username)
                 usernameEdittext.setText("")
             } else if (username.isNotEmpty() && !isConnected){

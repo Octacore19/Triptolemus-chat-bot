@@ -8,6 +8,8 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -25,6 +27,7 @@ import com.triptolemus.hngchatbot.RequestBotAsyncTask
 import com.triptolemus.hngchatbot.model.Model
 import com.triptolemus.hngchatbot.room.HNGChatbotDatabaseConnection
 import com.triptolemus.hngchatbot.room.entities.ChatEntity
+import com.triptolemus.hngchatbot.utils.PreferenceUtils
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -56,12 +59,10 @@ class ChatActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
+        setSupportActionBar(toolbar)
 
         database = HNGChatbotDatabaseConnection.invoke(this.applicationContext)
         compositeDisposable = CompositeDisposable()
-
-        backButton.setOnClickListener(this)
-        clearChats.setOnClickListener(this)
         val layoutManager = LinearLayoutManager(this)
         layoutManager.stackFromEnd = true
         chatContainer.layoutManager = layoutManager
@@ -71,6 +72,13 @@ class ChatActivity : AppCompatActivity(), View.OnClickListener {
         initAI()
         username = intent.getStringExtra("username")
         getAllChatsInit()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
+        return true
     }
 
     private fun initChat(message: String) {
@@ -97,18 +105,22 @@ class ChatActivity : AppCompatActivity(), View.OnClickListener {
         sessions = SessionName.of(projectId, sessionId)
     }
 
-    override fun onClick(item: View?) {
-        when {
-            item!!.id == R.id.backButton -> {
-                onBackPressed()
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.chat_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when{
+            item.itemId == R.id.logoutUser -> {
+                val intent = Intent(this, OnBoardingActivity::class.java)
+                PreferenceUtils.saveUser("")
+                startActivity(intent)
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 finish()
+                return true
             }
-            item.id == R.id.sendButton -> {
-                val message = messageEdittext.text.toString().trim()
-                sendMessage(message)
-                messageEdittext.setText("")
-            }
-            item.id == R.id.clearChats -> {
+            item.itemId == R.id.clearChat -> {
                 AlertDialog.Builder(this)
                     .setMessage("Do you want to clear all your chats?")
                     .setPositiveButton("Yes") { dialogInterface, _ ->
@@ -142,6 +154,18 @@ class ChatActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     .setCancelable(false)
                     .show()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onClick(item: View?) {
+        when {
+            item!!.id == R.id.sendButton -> {
+                val message = messageEdittext.text.toString().trim()
+                sendMessage(message)
+                messageEdittext.setText("")
             }
         }
     }

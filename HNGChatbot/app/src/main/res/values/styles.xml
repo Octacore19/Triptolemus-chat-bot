@@ -6,11 +6,21 @@
         <item name="colorPrimary">@color/mainTextColor</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/mainTextColor</item>
+        <item name="actionOverflowButtonStyle">@style/overflowStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="toolbarText">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
+    <style name="overflowStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/mainTextColor</item>
     </style>
 
 </resources>

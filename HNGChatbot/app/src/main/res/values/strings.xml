@@ -13,4 +13,6 @@
     <string name="cancel">Cancel</string>
     <string name="open_network_settings">Open Network Settings</string>
     <string name="enter_username">Please enter a name</string>
+    <string name="log_out">Log Out</string>
+    <string name="clear_chat">Clear Chat</string>
 </resources>
