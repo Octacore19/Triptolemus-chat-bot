@@ -5,9 +5,10 @@ import android.os.AsyncTask
 import com.google.cloud.dialogflow.v2.*
 import com.triptolemus.hngchatbot.activities.ChatActivity
 import java.lang.Exception
+import java.lang.ref.WeakReference
 
-class RequestBotAsyncTask(private val activity: Activity,
-                          private val session: SessionName,
+class RequestBotAsyncTask(private val activity: WeakReference<Activity>,
+        private val session: SessionName,
                           private val sessionsClient: SessionsClient,
                           private val queryInput: QueryInput): AsyncTask<Void, Void, DetectIntentResponse>() {
 
@@ -25,6 +26,6 @@ class RequestBotAsyncTask(private val activity: Activity,
     }
 
     override fun onPostExecute(result: DetectIntentResponse?) {
-        (activity as ChatActivity).receiveMessageFromBot(result!!)
+        (activity.get() as ChatActivity).receiveMessageFromBot(result!!)
     }
 }
